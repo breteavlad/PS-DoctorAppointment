@@ -3,7 +3,10 @@ package com.javaguides.doctorappointmentapp.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import jakarta.persistence.*;
-
+/**
+ * Appointment class represents an appointment entity in the system.
+ * An appointment includes details such as patient name, doctor name, date, hour, and description.
+ */
 @Entity
 @Table(name = "appointments")
 public class Appointment {
