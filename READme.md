@@ -22,5 +22,7 @@ Crearea unui tabel pentru doctori
 - fiecare doctor are atribute: id,nume,specializare, orele intre care lucreaza si datele de contact:adresa locului unde isi presteaza serviciile, telefon si email
 Crearea unui observer,subject si logger pentru a putea face posibil observer pattern-ul
 -realizarea unor comentarii in javadoc
-
+- am creat endpoints functionali de update,select,insert si delete pentru toate cele 3 clase: appointments,doctor, patient
+- folosind postman se poate face update,insert, select si delete la bazele de date:patient,doctor si appointments.
+![doctor appointment scheme](DoctorAppointment.png)
 
