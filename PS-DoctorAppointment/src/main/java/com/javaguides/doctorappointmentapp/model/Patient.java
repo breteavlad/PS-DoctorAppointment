@@ -20,17 +20,42 @@ public class Patient {
     @Column(nullable = false, length = 255)
     private String diseaseDescription;
 
+
+
+    @Column(nullable= false, length=45)
+    private String username;
+
+
+    @Column(nullable = false,length=45)
+    private String password;
+
     // Constructors
 
     public Patient() {
     }
 
-    public Patient(String patientName, ContactInformationClient contactInformation, String diseaseDescription) {
+    public Patient(String patientName, ContactInformationClient contactInformation, String diseaseDescription,String password) {
         this.patientName = patientName;
         this.contactInformation = contactInformation;
         this.diseaseDescription = diseaseDescription;
+        this.password=password;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
     // Getters and setters
 
     public Long getId() {

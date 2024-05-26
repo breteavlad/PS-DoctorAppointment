@@ -12,11 +12,23 @@ public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 45)
     private String name;
+
+    @Column(nullable = false, length = 45)
     private String specialty;
+    @Column(nullable = false, length = 45)
+    private String username;
+
+
+    @Column(nullable = false, length = 45)
+    private String password;
     @OneToOne
     @JoinColumn(name = "contact_information_id", referencedColumnName = "id")
     private ContactInformation contactInformation;
+
+    @Column(nullable = false, length = 45)
     private String workingHours;
 
     // Constructors
@@ -34,6 +46,20 @@ public class Doctor {
 
     // Getters and Setters
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getName() {
         return name;

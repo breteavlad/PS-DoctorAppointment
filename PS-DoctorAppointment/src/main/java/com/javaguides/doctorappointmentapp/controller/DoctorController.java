@@ -20,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/doctors")
+@CrossOrigin(origins="http://localhost:3000")
 public class DoctorController {
 
     @Autowired
@@ -78,6 +79,8 @@ public class DoctorController {
         doctor.setSpecialty(doctorRequest.getSpecialty());
         doctor.setWorkingHours(doctorRequest.getWorkingHours());
         doctor.setContactInformation(savedContactInformation);
+        doctor.setUsername(doctorRequest.getUsername());
+        doctor.setPassword(doctorRequest.getPassword());
 
         // Save the Doctor entity
         Doctor savedDoctor = doctorService.addDoctor(doctor);

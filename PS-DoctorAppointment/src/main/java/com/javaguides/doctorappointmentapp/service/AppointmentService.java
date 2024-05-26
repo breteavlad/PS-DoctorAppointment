@@ -1,7 +1,3 @@
-/**
- * The AppointmentService class provides functionalities to manage appointments
- * and notifies observers of changes to these appointments.
- */
 package com.javaguides.doctorappointmentapp.service;
 
 import com.javaguides.doctorappointmentapp.model.Appointment;
@@ -18,12 +14,13 @@ import java.util.Optional;
 @Service
 public class AppointmentService implements AppointmentSubject {
 
-    private List<AppointmentObserver> observers = new ArrayList<>();
+    private final List<AppointmentObserver> observers = new ArrayList<>();
+    private final AppointmentRepository appointmentRepository;
 
     @Autowired
-    private AppointmentRepository appointmentRepository;
-
-
+    public AppointmentService(AppointmentRepository appointmentRepository) {
+        this.appointmentRepository = appointmentRepository;
+    }
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
@@ -39,31 +36,55 @@ public class AppointmentService implements AppointmentSubject {
         return appointmentRepository.findById(id);
     }
 
+
     public Appointment updateAppointment(Long id, Appointment updatedAppointment) {
-        Appointment savedAppointment = appointmentRepository.findById(id)
-                .map(appointment -> {
-                    appointment.setPatientName(updatedAppointment.getPatientName());
-                    appointment.setDoctorName(updatedAppointment.getDoctorName());
-                    appointment.setDate(updatedAppointment.getDate());
-                    appointment.setHour(updatedAppointment.getHour());
-                    appointment.setDescription(updatedAppointment.getDescription());
-                    return appointmentRepository.save(appointment);
-                })
-                .orElseGet(() -> {
-                    updatedAppointment.setId(id);
-                    return appointmentRepository.save(updatedAppointment);
-                });
-        notifyObservers(savedAppointment, "updated");
-        return savedAppointment;
+        if (updatedAppointment == null) {
+            throw new IllegalArgumentException("Updated appointment data cannot be null");
+        }
+
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
+        if (optionalAppointment.isPresent()) {
+            Appointment existingAppointment = optionalAppointment.get();
+            System.out.println("Updating existing appointment with ID: " + id);
+            existingAppointment.setPatientName(updatedAppointment.getPatientName());
+            existingAppointment.setDoctorName(updatedAppointment.getDoctorName());
+            existingAppointment.setDate(updatedAppointment.getDate());
+            existingAppointment.setHour(updatedAppointment.getHour());
+            existingAppointment.setDescription(updatedAppointment.getDescription());
+            Appointment savedAppointment = appointmentRepository.save(existingAppointment);
+            System.out.println("Updated appointment saved: " + savedAppointment);
+            notifyObservers(savedAppointment, "updated");
+            return savedAppointment;
+        } else {
+            System.out.println("Creating new appointment with ID: " + id);
+            updatedAppointment.setId(id);
+            Appointment savedAppointment = appointmentRepository.save(updatedAppointment);
+            System.out.println("New appointment created: " + savedAppointment);
+            notifyObservers(savedAppointment, "updated");
+            return savedAppointment;
+        }
     }
 
+
+
+
+
+
     public void deleteAppointment(Long id) {
+        System.out.println("Attempting to delete appointment with ID: " + id);
+
         Optional<Appointment> appointmentOptional = appointmentRepository.findById(id);
-        appointmentOptional.ifPresent(appointment -> {
+        if (appointmentOptional.isPresent()) {
+            Appointment appointment = appointmentOptional.get();
+            System.out.println("Appointment found: " + appointment);
             appointmentRepository.deleteById(id);
+            System.out.println("Appointment deleted: " + appointment);
             notifyObservers(appointment, "deleted");
-        });
+        } else {
+            System.out.println("No appointment found with ID: " + id);
+        }
     }
+
 
     @Override
     public void registerObserver(AppointmentObserver observer) {

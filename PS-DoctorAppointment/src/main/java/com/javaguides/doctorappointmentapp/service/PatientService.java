@@ -7,6 +7,7 @@ import com.javaguides.doctorappointmentapp.observer.PatientSubject;
 import com.javaguides.doctorappointmentapp.repository.ContactInformationClientRepository;
 import com.javaguides.doctorappointmentapp.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class PatientService implements PatientSubject {
 
         // Retrieve the patient by ID
         Optional<Patient> optionalPatient = patientRepository.findById(id);
-        System.out.println("Optional patient: " +optionalPatient);
+        System.out.println("Optional patient: " + optionalPatient);
         Patient existingPatient = optionalPatient.orElse(null);
 
         // Print the patient found by ID
@@ -57,13 +58,25 @@ public class PatientService implements PatientSubject {
             // Get the updated contact information
             ContactInformationClient updatedContactInfo = updatedPatient.getContactInformationClient();
 
+            // Ensure existingPatient has non-null contact information
+            if (existingPatient.getContactInformationClient() == null) {
+                existingPatient.setContactInformationClient(new ContactInformationClient());
+            }
+
             if (updatedContactInfo != null) {
                 // Check if the contact information needs to be saved or updated
                 if (updatedContactInfo.getId() == null) {
-                    // Save the new contact information
-                    System.out.println("Saving new contact information for patient with ID: " + id);
-                    ContactInformationClient savedContactInfo = contactInformationClientRepository.save(updatedContactInfo);
-                    existingPatient.setContactInformationClient(savedContactInfo);
+                    try {
+                        // Save the new contact information
+                        System.out.println("Saving new contact information for patient with ID: " + id);
+                        System.out.println("Updated info: " + updatedContactInfo);
+                        ContactInformationClient savedContactInfo = contactInformationClientRepository.save(updatedContactInfo);
+                        System.out.println("Saved info: " + savedContactInfo);
+                        existingPatient.setContactInformationClient(savedContactInfo);
+                    }catch(DataAccessException e){
+                        System.err.println("Error occurred while saving contact information: " + e.getMessage());
+
+                    }
                 } else {
                     // Update the existing contact information
                     System.out.println("Updating contact information for patient with ID: " + id);
@@ -83,6 +96,8 @@ public class PatientService implements PatientSubject {
             return null;
         }
     }
+
+
 
 
     public void deletePatient(Long id) {

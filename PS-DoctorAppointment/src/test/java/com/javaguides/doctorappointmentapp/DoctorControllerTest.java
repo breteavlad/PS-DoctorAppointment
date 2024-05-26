@@ -50,7 +50,7 @@ class DoctorControllerTest {
     @Test
     void testAddDoctor() {
         // Arrange
-        DoctorRequest doctorRequest = new DoctorRequest("John Doe", "Cardiologist", "john@example.com", "1234567890", "123 Main St","8AM-17PM");
+        DoctorRequest doctorRequest = new DoctorRequest("John Doe", "Cardiologist", "john@example.com", "1234567890", "123 Main St","8AM-17PM","john24","21");
         Doctor doctor = new Doctor(1L, "John Doe", "Cardiologist", new ContactInformation( "john@example.com", "1234567890", "123 Main St"), "");
         when(doctorService.addDoctor(any(Doctor.class))).thenReturn(doctor);
 

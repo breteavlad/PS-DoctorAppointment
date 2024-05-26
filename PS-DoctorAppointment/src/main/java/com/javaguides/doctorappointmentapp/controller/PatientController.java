@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/patients")
+@CrossOrigin(origins="http://localhost:3000")
 public class PatientController {
 
     @Autowired
@@ -53,7 +54,7 @@ public class PatientController {
      */
     @PostMapping
     public Patient addPatient(@RequestBody PatientRequest patientRequest) {
-        // Log the received patient request for debugging
+        //I have used patient Request in order to combine the two classes into one to be able to use them in the body
         System.out.println("Received Patient Request: " + patientRequest);
 
         // Create a new ContactInformationClient entity
@@ -65,13 +66,15 @@ public class PatientController {
         // Save the ContactInformationClient entity
         ContactInformationClient savedContactInformationClient = contactInformationClientRepository.save(contactInformationClient);
 
-        // Log the saved ContactInformationClient for debugging
+
         System.out.println("Saved Contact Information Client: " + savedContactInformationClient);
 
         // Create a new Patient entity
         Patient patient = new Patient();
         patient.setPatientName(patientRequest.getPatientName());
         patient.setDiseaseDescription(patientRequest.getDiseaseDescription());
+        patient.setPassword(patientRequest.getPassword());
+        patient.setUsername(patientRequest.getUsername());
         patient.setContactInformationClient(savedContactInformationClient);
 
         // Save the Patient entity

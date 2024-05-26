@@ -33,13 +33,13 @@ public class AppointmentServiceTest3 {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        appointmentService.registerObserver(appointmentObserver); // Ensure observer is registered
     }
 
     /**
      * Test case to verify the deleteAppointment method of AppointmentService.
      * It verifies that the service deletes an existing appointment by ID.
      */
-
     @Test
     void testDeleteAppointment() {
         // Create a mock appointment
@@ -49,7 +49,7 @@ public class AppointmentServiceTest3 {
         // Mock the behavior of appointmentRepository.findById to return the mock appointment
         when(appointmentRepository.findById(appointment.getId())).thenReturn(Optional.of(appointment));
 
-
+        // Call the deleteAppointment method
         appointmentService.deleteAppointment(appointment.getId());
 
         // Verify that the appointmentRepository.findById method was called once with the correct appointment ID

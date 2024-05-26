@@ -12,21 +12,47 @@ public class DoctorRequest {
     private String address;
     private String workingHours;
 
+
+
+    private String username;
+
+
+
+    private String password;
+
     // Constructors
 
     public DoctorRequest() {
     }
 
-    public DoctorRequest(String name, String specialty, String email, String phone, String address, String workingHours) {
+    public DoctorRequest(String name, String specialty, String email, String phone, String address, String workingHours,String username,String password) {
         this.name = name;
         this.specialty = specialty;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.workingHours = workingHours;
+        this.username=username;
+        this.password=password;
     }
 
     // Getters and Setters
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getName() {
         return name;

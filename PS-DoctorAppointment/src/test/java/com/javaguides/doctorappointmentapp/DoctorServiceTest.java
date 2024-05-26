@@ -47,6 +47,23 @@ class DoctorServiceTest {
      * Test case to verify the addDoctor method of DoctorService.
      * It verifies that the service successfully adds a doctor and notifies the observer.
      */
+
+    @Test
+    void testGetAllDoctors() {
+        // Create a list of doctors for testing
+        List<Doctor> doctors = new ArrayList<>();
+        doctors.add(new Doctor());
+        doctors.add(new Doctor());
+
+        // Mock the behavior of doctorRepository.findAll() to return the list of doctors
+        when(doctorRepository.findAll()).thenReturn(doctors);
+
+        // Call the getAllDoctors method
+        List<Doctor> result = doctorService.getAllDoctors();
+
+        // Verify that the returned list is equal to the list of doctors we created
+        assertEquals(doctors, result);
+    }
     @Test
     void testAddDoctor() {
 

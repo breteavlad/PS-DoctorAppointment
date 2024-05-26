@@ -43,44 +43,51 @@ public class DoctorService implements DoctorSubject {
 
 
     public Doctor updateDoctor(Long id, Doctor updatedDoctor) {
+        if (updatedDoctor == null) {
+            throw new IllegalArgumentException("Updated doctor data cannot be null");
+        }
+
         System.out.println("Updating doctor with ID: " + id);
+
+        // Check if the updated doctor has a contact information
+        ContactInformation updatedContactInfo = updatedDoctor.getContactInformation();
+
+        // Check if the updated doctor has a valid contact information
+        if (updatedContactInfo != null) {
+            // Check if the contact information needs to be saved or updated
+            if (updatedContactInfo.getId() == null) {
+                // Save the new contact information
+                System.out.println("Saving new contact information for doctor with ID: " + id);
+                ContactInformation savedContactInfo = contactInformationRepository.save(updatedContactInfo);
+                updatedDoctor.setContactInformation(savedContactInfo);
+            } else {
+                // Update the existing contact information
+                System.out.println("Updating contact information for doctor with ID: " + id);
+                ContactInformation existingContactInfo = contactInformationRepository.findById(updatedContactInfo.getId()).orElseThrow();
+                existingContactInfo.setEmail(updatedContactInfo.getEmail());
+                existingContactInfo.setPhone(updatedContactInfo.getPhone());
+                existingContactInfo.setAddress(updatedContactInfo.getAddress());
+                contactInformationRepository.save(existingContactInfo);
+            }
+        }
+
         Optional<Doctor> optionalDoctor = doctorRepository.findById(id);
-        System.out.println("Doctor found by ID " + id + ": " + optionalDoctor.orElse(null)); // Print the doctor found by ID
-        return doctorRepository.findById(id)
-                .map(existingDoctor -> {
-                    existingDoctor.setName(updatedDoctor.getName());
-                    existingDoctor.setSpecialty(updatedDoctor.getSpecialty());
+        Doctor savedDoctor = optionalDoctor.map(doctor -> {
+            doctor.setName(updatedDoctor.getName());
+            doctor.setSpecialty(updatedDoctor.getSpecialty());
+            doctor.setContactInformation(updatedDoctor.getContactInformation());
+            return doctorRepository.save(doctor);
+        }).orElseGet(() -> {
+            updatedDoctor.setId(id);
+            return doctorRepository.save(updatedDoctor);
+        });
 
-                    // Get the updated contact information
-                    ContactInformation updatedContactInfo = updatedDoctor.getContactInformation();
-
-                    if (updatedContactInfo != null) {
-                        // Check if the contact information needs to be saved or updated
-                        if (updatedContactInfo.getId() == null) {
-                            // Save the new contact information
-                            System.out.println("Saving new contact information for doctor with ID: " + id);
-                            ContactInformation savedContactInfo = contactInformationRepository.save(updatedContactInfo);
-                            existingDoctor.setContactInformation(savedContactInfo);
-                        } else {
-                            // Update the existing contact information
-                            System.out.println("Updating contact information for doctor with ID: " + id);
-                            existingDoctor.getContactInformation().setEmail(updatedContactInfo.getEmail());
-                            existingDoctor.getContactInformation().setPhone(updatedContactInfo.getPhone());
-                            existingDoctor.getContactInformation().setAddress(updatedContactInfo.getAddress());
-                        }
-                    }
-
-                    // Update the working hours
-                    existingDoctor.setWorkingHours(updatedDoctor.getWorkingHours());
-
-                    // Save the updated doctor
-                    Doctor savedDoctor = doctorRepository.save(existingDoctor);
-                    System.out.println("Doctor with ID " + id + " updated successfully");
-                    notifyObservers(savedDoctor, "updated");
-                    return savedDoctor;
-                })
-                .orElse(null); // or throw an exception if needed
+        System.out.println("Doctor with ID " + id + " updated successfully: " + savedDoctor);
+        notifyObservers(savedDoctor, "updated");
+        return savedDoctor;
     }
+
+
 
 
 

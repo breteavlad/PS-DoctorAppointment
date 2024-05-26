@@ -1,8 +1,3 @@
-/**
- * Unit tests for the {@link DoctorService} class, focusing on the updateDoctor method.
- * This class contains test cases for updating doctors using the {@link DoctorService}.
- * It uses Mockito for mocking dependencies and testing the behavior of the service method.
- */
 package com.javaguides.doctorappointmentapp;
 
 import com.javaguides.doctorappointmentapp.model.ContactInformation;
@@ -20,6 +15,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class DoctorServiceTest2 {
@@ -39,39 +36,39 @@ class DoctorServiceTest2 {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        doctorService.registerObserver(doctorObserver); // Ensure observer is registered
     }
+
     /**
      * Test case to verify the updateDoctor method of DoctorService.
      * It verifies that the service successfully updates a doctor's information.
      */
     @Test
     void testUpdateDoctor() {
-
+        long doctorId = 2L;
         Doctor existingDoctor = new Doctor();
-        existingDoctor.setId(2L);
+        existingDoctor.setId(doctorId);
+        existingDoctor.setName("Existing Name");
+        existingDoctor.setSpecialty("Existing Specialty");
 
-
-        when(doctorRepository.findById(existingDoctor.getId())).thenReturn(Optional.of(existingDoctor));
-
+        when(doctorRepository.findById(doctorId)).thenReturn(Optional.of(existingDoctor));
 
         Doctor updatedDoctorData = new Doctor();
+        updatedDoctorData.setId(doctorId);
         updatedDoctorData.setName("Updated Name");
-        updatedDoctorData.setSpecialty("Updated Specialization");
+        updatedDoctorData.setSpecialty("Updated Specialty");
 
+        when(doctorRepository.save(any(Doctor.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Doctor updatedDoctor = doctorService.updateDoctor(existingDoctor.getId(), updatedDoctorData);
+        Doctor returnedDoctor = doctorService.updateDoctor(doctorId, updatedDoctorData);
 
+        verify(doctorRepository, times(1)).findById(doctorId);
+        verify(doctorRepository, times(1)).save(any(Doctor.class));
 
-        assertEquals(updatedDoctorData, updatedDoctor);
+        assertNotNull(returnedDoctor, "Updated doctor should not be null");
+        assertEquals(updatedDoctorData.getName(), returnedDoctor.getName());
+        assertEquals(updatedDoctorData.getSpecialty(), returnedDoctor.getSpecialty());
 
-
-        verify(doctorRepository, times(1)).findById(existingDoctor.getId());
-
-
-        verify(doctorRepository, times(1)).save(updatedDoctor);
-
-
-        assertEquals(updatedDoctorData.getName(), updatedDoctor.getName());
-        assertEquals(updatedDoctorData.getSpecialty(), updatedDoctor.getSpecialty());
+        verify(doctorObserver, times(1)).update(any(Doctor.class), eq("updated"));
     }
 }

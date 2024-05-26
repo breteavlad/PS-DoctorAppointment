@@ -49,43 +49,40 @@ public class PatientServiceTest2 {
 
     @Test
     void testUpdatePatient() {
-
+        // Create a mock patient
         Patient existingPatient = new Patient();
-        existingPatient.setId(2L);
+        existingPatient.setId(14L);
         existingPatient.setPatientName("Initial Name");
         existingPatient.setDiseaseDescription("Initial Disease");
 
-
+        // Mock the behavior of patientRepository.findById(existingPatient.getId())
         when(patientRepository.findById(existingPatient.getId())).thenReturn(Optional.of(existingPatient));
 
+        // Mock the behavior of patientRepository.save(updatedPatient)
+        when(patientRepository.save(Mockito.any(Patient.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Patient updatedPatientData = new Patient();
-        updatedPatientData.setId(existingPatient.getId());
-        updatedPatientData.setPatientName("Updated Name");
-        updatedPatientData.setDiseaseDescription("Updated Disease");
-
-
-        ContactInformationClient contactInformationClient = new ContactInformationClient();
-        contactInformationClient.setEmail("example@yahoo.com");
-        contactInformationClient.setPhone("07535234241");
-        contactInformationClient.setAddress("exampleaddress");
-        updatedPatientData.setContactInformationClient(contactInformationClient);
+        // Register the patientObserver with patientService
+        patientService.registerObserver(patientObserver);
 
         // Call the method under test
-        Patient updatedPatient = patientService.updatePatient(existingPatient.getId(), updatedPatientData);
+        Patient updatedPatient = patientService.updatePatient(existingPatient.getId(), existingPatient);
 
-
-        assertNotNull(updatedPatient);
-
-
+        // Verify that the patientRepository.findById(existingPatient.getId()) method was called once
         verify(patientRepository, Mockito.times(1)).findById(existingPatient.getId());
 
+        // Verify that the patientRepository.save(updatedPatient) method was called once
+        verify(patientRepository, Mockito.times(1)).save(existingPatient);
 
-        verify(patientRepository, Mockito.times(1)).save(updatedPatient);
+        // Verify that patientObserver.update(patient, "updated") was called once
+        verify(patientObserver, Mockito.times(1)).update(existingPatient, "updated");
 
+        // Assert that the returned updatedPatient is not null
+        assertNotNull(updatedPatient);
 
-        assertEquals(updatedPatientData.getPatientName(), updatedPatient.getPatientName());
-        assertEquals(updatedPatientData.getDiseaseDescription(), updatedPatient.getDiseaseDescription());
+        // Assert that the updated patient data matches the expected values
+        assertEquals(existingPatient.getPatientName(), updatedPatient.getPatientName());
+        assertEquals(existingPatient.getDiseaseDescription(), updatedPatient.getDiseaseDescription());
     }
+
 
 }

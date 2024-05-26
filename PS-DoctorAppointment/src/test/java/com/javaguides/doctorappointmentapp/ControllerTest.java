@@ -2,7 +2,7 @@ package com.javaguides.doctorappointmentapp;
 
 
 
-import com.javaguides.doctorappointmentapp.controller.Controller;
+import com.javaguides.doctorappointmentapp.controller.AppointmentController;
 import com.javaguides.doctorappointmentapp.model.Appointment;
 import com.javaguides.doctorappointmentapp.service.AppointmentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ class ControllerTest {
     private AppointmentService appointmentService;
 
     @InjectMocks
-    private Controller controller;
+    private AppointmentController appointmentController;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +38,7 @@ class ControllerTest {
         when(appointmentService.getAllAppointments()).thenReturn(appointments);
 
         // Act
-        List<Appointment> result = controller.getAllAppointments();
+        List<Appointment> result = appointmentController.getAllAppointments();
 
         // Assert
         assertEquals(appointments, result);
@@ -51,7 +51,7 @@ class ControllerTest {
         when(appointmentService.addAppointment(appointment)).thenReturn(appointment);
 
         // Act
-        Appointment result = controller.addAppointment(appointment);
+        Appointment result = appointmentController.addAppointment(appointment);
 
         // Assert
         assertEquals(appointment, result);
@@ -65,7 +65,7 @@ class ControllerTest {
         when(appointmentService.updateAppointment(id, updatedAppointment)).thenReturn(updatedAppointment);
 
         // Act
-        Appointment result = controller.updateAppointment(id, updatedAppointment);
+        Appointment result = appointmentController.updateAppointment(id, updatedAppointment);
 
         // Assert
         assertEquals(updatedAppointment, result);
@@ -78,7 +78,7 @@ class ControllerTest {
         ResponseEntity<?> expectedResponse = ResponseEntity.ok().build();
 
         // Act
-        ResponseEntity<?> result = controller.deleteAppointment(id);
+        ResponseEntity<?> result = appointmentController.deleteAppointment(id);
 
         // Assert
         assertEquals(expectedResponse, result);

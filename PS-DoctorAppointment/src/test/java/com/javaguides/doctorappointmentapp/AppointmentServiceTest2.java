@@ -14,13 +14,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
-
-/**
- * Unit tests for the {@link AppointmentService} class, focusing on the updateAppointment method.
- * This class contains test cases for updating appointments using the {@link AppointmentService}.
- * It uses Mockito for mocking dependencies and testing the behavior of the service method.
- */
 
 public class AppointmentServiceTest2 {
 
@@ -36,38 +31,36 @@ public class AppointmentServiceTest2 {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        appointmentService.registerObserver(appointmentObserver); // Ensure observer is registered
     }
-    /**
-     * Test case to verify the updateAppointment method of AppointmentService.
-     * It verifies that the service updates an existing appointment with new data.
-     */
 
     @Test
     void testUpdateAppointment() {
-
+        // Create existing appointment
         Appointment existingAppointment = new Appointment();
         existingAppointment.setId(1L);
 
-
+        // Mock repository to return existing appointment
         when(appointmentRepository.findById(existingAppointment.getId())).thenReturn(Optional.of(existingAppointment));
 
-
+        // Create updated appointment data
         Appointment updatedAppointmentData = new Appointment();
-        updatedAppointmentData.setDate(LocalDate.of(2024,12,24));
+        updatedAppointmentData.setId(1L);
+        updatedAppointmentData.setDate(LocalDate.of(2024, 12, 24));
 
+        // Mock repository save behavior
+        when(appointmentRepository.save(any(Appointment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        // Update appointment
         Appointment updatedAppointment = appointmentService.updateAppointment(existingAppointment.getId(), updatedAppointmentData);
 
+        // Verify that the appointment was updated correctly
+        assertNotNull(updatedAppointment, "Updated appointment should not be null");
+        assertEquals(updatedAppointmentData.getDate(), updatedAppointment.getDate(), "Dates should match");
 
-        assertEquals(updatedAppointmentData.getDate(), updatedAppointment.getDate());
-
-
+        // Verify interactions with the repository and observer
         verify(appointmentRepository, times(1)).findById(existingAppointment.getId());
-
-
-        verify(appointmentRepository, times(1)).save(updatedAppointment);
-
-
-        verify(appointmentObserver, times(1)).update(updatedAppointment, "updated");
+        verify(appointmentRepository, times(1)).save(existingAppointment);
+        verify(appointmentObserver, times(1)).update(any(Appointment.class), eq("updated"));
     }
 }

@@ -20,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -44,6 +46,23 @@ public class PatientServiceTest {
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testGetAllPatients() {
+        // Create a list of patients for testing
+        List<Patient> patients = new ArrayList<>();
+        patients.add(new Patient());
+        patients.add(new Patient());
+
+        // Mock the behavior of patientRepository.findAll() to return the list of patients
+        when(patientRepository.findAll()).thenReturn(patients);
+
+        // Call the getAllPatients method
+        List<Patient> result = patientService.getAllPatients();
+
+        // Verify that the returned list is equal to the list of patients we created
+        assertEquals(patients, result);
     }
 
     /**
