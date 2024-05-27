@@ -27,6 +27,8 @@ Obiectivele acestui proiect sunt:
 
 ![doctor appointment scheme](doctorapp2.png)
 
+![use case diagram](DoctorUseCase.jpg)
+
 ## ENDPOINTS
 
 ### 1. Appointments
